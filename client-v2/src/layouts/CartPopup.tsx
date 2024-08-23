@@ -1,8 +1,12 @@
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import "../styles/CartPopup.css";
 import { CartPopupProps } from "../utils/Props";
 
-const CartPopup = ({ cartItems, setCartItems, onClose }: CartPopupProps) => {
+const CartPopup: FC<CartPopupProps> = ({
+  cartItems,
+  setCartItems,
+  onClose,
+}) => {
   useEffect(() => {
     // Add no-scroll class to body when the popup is open
     document.body.classList.add("no-scroll");

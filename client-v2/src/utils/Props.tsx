@@ -1,4 +1,4 @@
-import { Dispatch, ReactNode, SetStateAction } from "react";
+import { ReactNode } from "react";
 import { User } from "../models/User";
 
 export interface AuthContextType {
@@ -81,4 +81,19 @@ export interface DishesCardProps {
   img?: string;
   description?: string;
   price?: number;
+}
+
+// Define the type for a single cart item
+export interface CartItem {
+  title: string;
+  price: number;
+  quantity: number;
+  img: string;
+}
+
+// Define the props type for CartPopup
+export interface CartPopupProps {
+  cartItems: CartItem[];
+  setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  onClose: () => void;
 }
