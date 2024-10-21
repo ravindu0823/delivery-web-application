@@ -1,8 +1,14 @@
 import { useInView } from "react-intersection-observer";
 import Button from "../layouts/Button";
-import { FC } from "react";
+import { FC, useContext } from "react";
+import { OrganizationContext } from "../contexts/OrganizationContext";
+import { Link, To } from "react-router-dom";
 
 const HomeComponent: FC = () => {
+  const organizationContext = useContext(OrganizationContext);
+
+  const { organization } = organizationContext!;
+
   const { ref: titleRef, inView: titleInView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -14,6 +20,8 @@ const HomeComponent: FC = () => {
     delay: 500,
   });
 
+  console.log(organization);
+
   return (
     <div className="min-h-screen flex justify-center items-center lg:px-32 px-5 bg-hero-image bg-cover bg-no-repeat">
       <div className="w-full lg:w-2/3 space-y-5 text-center">
@@ -23,7 +31,7 @@ const HomeComponent: FC = () => {
             titleInView ? "animate-fadeInDown" : "opacity-0"
           }`}
         >
-          - Serendib Restaurant & Bar -
+          - {organization?.name} -
         </h1>
         <p
           ref={paragraphRef}
@@ -31,10 +39,12 @@ const HomeComponent: FC = () => {
             paragraphInView ? "animate-fadeInDown" : "opacity-0"
           }`}
         >
-          THE BEST SRI LANKAN FOOD IN MALAYSIA
+          {organization?.description}
         </p>
         <div>
-          <Button title="Order Now" />
+          <Link to={organization?.googleReview as To} target="_blank">
+            <Button title="Review Now" />
+          </Link>
         </div>
       </div>
     </div>

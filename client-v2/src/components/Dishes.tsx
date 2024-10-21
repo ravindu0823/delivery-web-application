@@ -1,18 +1,23 @@
 import { useState, useEffect, useContext } from "react";
 import DishesCard from "../layouts/DishesCard";
-import { ORGANIZATION } from "../api/config";
 import { AuthContext } from "../contexts/AuthContext";
 import { axiosInstance } from "../api/config";
 import { createGetCategoryUrl, getProductUrl } from "../api/authController";
+import { CustomLoadingPage } from "../pages/LoadingPage";
+import { useParams } from "react-router-dom";
 
 interface Category {
   id: string;
   name: string;
   createUtc: string;
   organizationId: string;
-  // products: any[];
   status: number;
   userId: string;
+}
+
+interface ProductOptionsProps {
+  name: string;
+  price: number;
 }
 
 interface Product {
@@ -21,6 +26,7 @@ interface Product {
   description: string;
   price: number;
   image: string;
+  productOptions: ProductOptionsProps[];
 }
 
 interface ProductsMap {
@@ -28,64 +34,23 @@ interface ProductsMap {
 }
 
 const Dishes = () => {
-  const authContext = useContext(AuthContext);
+  const params = useParams();
+  const ORGANIZATION: string = params.orgId!;
+
+  const { user } = useContext(AuthContext)!;
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<ProductsMap>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { user } = authContext!;
-
   useEffect(() => {
     const fetchCategoriesAndProducts = async () => {
       try {
-        const categoryResponse = await axiosInstance.get<Category[]>(
-          createGetCategoryUrl(ORGANIZATION),
-          {
-            headers: {
-              Authorization: `Bearer ${user?.accessToken}`,
-            },
-          }
-        );
+        const fetchedCategories = await fetchCategories();
+        setCategories(fetchedCategories);
 
-        setCategories(categoryResponse.data);
-
-        const productPromises = categoryResponse.data.map(
-          async (category: Category) => {
-            try {
-              const productResponse = await axiosInstance.get<Product[]>(
-                getProductUrl(ORGANIZATION, category.id),
-                {
-                  headers: {
-                    Authorization: `Bearer ${user?.accessToken}`,
-                  },
-                }
-              );
-
-              return {
-                categoryId: category.id,
-                products: productResponse.data,
-              };
-            } catch (error) {
-              console.error(
-                `Error fetching products for category ${category.id}:`,
-                error
-              );
-              return { categoryId: category.id, products: [] };
-            }
-          }
-        );
-
-        const productDataArray = await Promise.all(productPromises);
-        const productsMap: ProductsMap = productDataArray.reduce(
-          (acc, { categoryId, products }) => {
-            acc[categoryId] = products;
-            return acc;
-          },
-          {} as ProductsMap
-        );
-
-        setProducts(productsMap);
+        const fetchedProducts = await fetchProducts(fetchedCategories);
+        setProducts(fetchedProducts);
       } catch (error) {
         setError((error as Error).message);
         console.error("Error fetching categories or products:", error);
@@ -97,13 +62,47 @@ const Dishes = () => {
     fetchCategoriesAndProducts();
   }, [user?.accessToken]);
 
-  if (loading) {
-    return <div className="text-center py-10">Loading dishes...</div>;
-  }
+  const fetchCategories = async (): Promise<Category[]> => {
+    const response = await axiosInstance.get<Category[]>(
+      createGetCategoryUrl(ORGANIZATION),
+      {
+        headers: { Authorization: `Bearer ${user?.accessToken}` },
+      }
+    );
+    return response.data;
+  };
 
-  if (error) {
+  const fetchProducts = async (
+    categories: Category[]
+  ): Promise<ProductsMap> => {
+    const productPromises = categories.map(async (category) => {
+      try {
+        const response = await axiosInstance.get<Product[]>(
+          getProductUrl(ORGANIZATION, category.id),
+          {
+            headers: { Authorization: `Bearer ${user?.accessToken}` },
+          }
+        );
+        return { categoryId: category.id, products: response.data };
+      } catch (error) {
+        console.error(
+          `Error fetching products for category ${category.id}:`,
+          error
+        );
+        return { categoryId: category.id, products: [] };
+      }
+    });
+
+    const productDataArray = await Promise.all(productPromises);
+    return productDataArray.reduce((acc, { categoryId, products }) => {
+      acc[categoryId] = products;
+      return acc;
+    }, {} as ProductsMap);
+  };
+
+  if (loading) return <CustomLoadingPage />;
+  if (error)
     return <div className="text-center text-red-500 py-10">Error: {error}</div>;
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 py-10 px-4 lg:px-32">
@@ -116,37 +115,49 @@ const Dishes = () => {
           <p className="text-center text-gray-600">No categories available.</p>
         ) : (
           categories.map((category) => (
-            <div
+            <CategorySection
               key={category.id}
-              className="bg-white p-6 rounded-lg shadow-lg mb-8 mx-auto w-full lg:w-3/4"
-            >
-              <h2 className="text-2xl lg:text-4xl font-bold text-gray-800 mb-6 border-b-2 border-gray-200 pb-4 text-center">
-                {category.name}
-              </h2>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {products[category.id] && products[category.id].length > 0 ? (
-                  products[category.id].map((product) => (
-                    <DishesCard
-                      key={product.id}
-                      img={product.image}
-                      title={product.name}
-                      description={product.description}
-                      price={product.price}
-                    />
-                  ))
-                ) : (
-                  <p className="text-center text-gray-600 col-span-full">
-                    No products available.
-                  </p>
-                )}
-              </div>
-            </div>
+              category={category}
+              products={products[category.id] || []}
+            />
           ))
         )}
       </div>
     </div>
   );
 };
+
+const CategorySection = ({
+  category,
+  products,
+}: {
+  category: Category;
+  products: Product[];
+}) => (
+  <div className="bg-white p-6 rounded-lg shadow-lg mb-8 mx-auto w-full lg:w-3/4">
+    <h2 className="text-2xl lg:text-4xl font-bold text-gray-800 mb-6 border-b-2 border-gray-200 pb-4 text-center">
+      {category.name}
+    </h2>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {products.length > 0 ? (
+        products.map((product) => (
+          <DishesCard
+            key={product.id}
+            img={product.image}
+            title={product.name}
+            description={product.description}
+            price={product.price}
+            productOptions={product.productOptions} // Passing productOptions to DishesCard
+          />
+        ))
+      ) : (
+        <p className="text-center text-gray-600 col-span-full">
+          No products available.
+        </p>
+      )}
+    </div>
+  </div>
+);
 
 export default Dishes;

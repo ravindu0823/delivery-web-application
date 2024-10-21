@@ -1,19 +1,21 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { BsFacebook, BsInstagram } from "react-icons/bs";
 import { RiTwitterXFill } from "react-icons/ri";
+import { OrganizationContext } from "../contexts/OrganizationContext";
 
 const Footer: FC = () => {
+  const organizationContext = useContext(OrganizationContext);
+
+  const { organization } = organizationContext!;
+
   return (
     <div className="bg-green-900 text-white rounded-t-3xl mt-8 md:mt-0">
       {/* Mobile Layout */}
       <div className="flex flex-col md:hidden p-4 border-t-4 border-brightColor">
         {/* Logo and Description */}
         <div className="text-center mb-6">
-          <h1 className="font-bold text-xl mb-2">Techwire Lanka</h1>
-          <p className="text-xs leading-relaxed">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni quia
-            porro tenetur? Ad, itaque minus atque laboriosam similique.
-          </p>
+          <h1 className="font-bold text-xl mb-2">{organization?.title}</h1>
+          <p className="text-xs leading-relaxed">{organization?.description}</p>
         </div>
 
         {/* Links and Menu Section */}
@@ -52,20 +54,20 @@ const Footer: FC = () => {
               className="hover:text-brightColor transition-colors duration-300 text-sm"
               href="mailto:TechwireLanka@gmail.com"
             >
-              TechwireLanka@gmail.com
+              {organization?.email}
             </a>
-            <a
+            {/* <a
               className="hover:text-brightColor transition-colors duration-300 text-sm"
-              href="tel:+94717083416"
+              href={`mailto:${organization?.email}`}
             >
-              +94 717 083 416
+              {organization?.email}
             </a>
             <a
               className="hover:text-brightColor transition-colors duration-300 text-sm"
               href="/"
             >
               Social Media
-            </a>
+            </a> */}
           </nav>
         </div>
       </div>
@@ -73,13 +75,8 @@ const Footer: FC = () => {
       {/* Desktop Layout */}
       <div className="hidden md:flex flex-col md:flex-row justify-between p-8 md:px-16 px-5 border-t-4 border-brightColor">
         <div className="w-full md:w-1/4 mb-6 md:mb-0">
-          <h1 className="font-bold text-2xl mb-4">Techwire Lanka</h1>
-          <p className="text-sm leading-relaxed">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni quia
-            porro tenetur? Ad, itaque minus atque laboriosam similique
-            reprehenderit sequi perferendis ducimus vel accusantium beatae! Cum
-            est a excepturi recusandae!
-          </p>
+          <h1 className="font-bold text-2xl mb-4">{organization?.title}</h1>
+          <p className="text-sm leading-relaxed">{organization?.description}</p>
         </div>
         <div className="mb-6 md:mb-0">
           <h1 className="font-medium text-xl mb-4">Links</h1>
@@ -114,22 +111,22 @@ const Footer: FC = () => {
           <nav className="flex flex-col gap-2">
             <a
               className="hover:text-brightColor transition-colors duration-300 cursor-pointer"
-              href="mailto:TechwireLanka@gmail.com"
+              href={`mailto:${organization?.email}`}
             >
-              TechwireLanka@gmail.com
+              {organization?.email}
             </a>
-            <a
+            {/* <a
               className="hover:text-brightColor transition-colors duration-300 cursor-pointer"
               href="tel:+94717083416"
             >
               +94 717 083 416
-            </a>
-            <a
+            </a> */}
+            {/* <a
               className="hover:text-brightColor transition-colors duration-300 cursor-pointer"
               href="/"
             >
               Social Media
-            </a>
+            </a> */}
           </nav>
         </div>
       </div>

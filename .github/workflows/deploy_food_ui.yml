@@ -1,0 +1,57 @@
+﻿name: Docker Compose - Deploy to DockerHub
+
+on:
+  push:
+    tags:
+      - stage-*
+
+jobs:
+  Build-and-Push:
+    name: Build and Push Food Delivery Docker Images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Setup git config
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+
+      - name: Login to DockerHub Registry
+        #        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        run: echo HelloWorld123 | docker login -u techwire --password-stdin
+
+      - name: Build and Push Docker Images
+        run: |
+          docker-compose build
+          docker-compose push
+        working-directory: ./client-v2
+  
+  Deploy:
+    needs: Build-and-Push
+    name: Deploy Food UI to Azure Instance
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          # host: ${{ secrets.DIGITAL_OCEAN_HOST }}
+          host: 45.32.125.74
+          # username: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
+          username: root
+          # password: ${{ secrets.DIGITAL_OCEAN_PASSWORD }}
+          password: D4$wY3bFRY.2bvL?
+          script: |
+            cd delivery-web-application/client-v2
+            docker compose down -v
+            git pull origin production
+            docker compose up -d
+    

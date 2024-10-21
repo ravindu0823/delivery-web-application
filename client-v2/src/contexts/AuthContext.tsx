@@ -3,8 +3,8 @@ import { User } from "../models/User";
 import { AuthContextProviderProps, AuthContextType } from "../utils/Props";
 import Cookies from "js-cookie";
 import {
-  userSignIn,
-  userSignUp,
+  organizationDataLogin,
+  organizationDataRegister,
   validateAuthToken,
 } from "../api/authController";
 import {
@@ -25,10 +25,32 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   useEffect(() => {
     const validateToken = async () => {
-      const accessToken = Cookies.get("accessToken");
-      const refreshToken = Cookies.get("refreshToken");
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
 
-      if (!accessToken || !refreshToken) return setIsSignedIn(false);
+      if (!accessToken || !refreshToken) {
+        const user: User = {
+          accessToken: "temp",
+        };
+
+        const data = await organizationDataLogin(user);
+
+        if (data == null) {
+          setUser(undefined);
+          setIsSignedIn(false);
+          return;
+        }
+
+        localStorage.setItem("accessToken", data.token);
+        localStorage.setItem("refreshToken", data.refreshToken);
+
+        setUser({
+          accessToken: data.token,
+          refreshToken: data.refreshToken,
+        });
+
+        setIsSignedIn(true);
+      }
 
       const validatedToken = await validateAuthToken(
         accessToken!,
@@ -40,6 +62,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         setIsSignedIn(false);
         return;
       }
+
+      localStorage.setItem("accessToken", validatedToken.token);
+      localStorage.setItem("refreshToken", validatedToken.refreshToken);
 
       setUser({
         accessToken: validatedToken.token,
@@ -54,7 +79,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const signIn = async (_user: User) => {
     if (validateUserLoginData(_user)) {
-      const userData = await userSignIn(_user);
+      const userData = await organizationDataLogin(_user);
 
       if (!userData) {
         setIsSignedIn(false);
@@ -83,8 +108,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   };
 
   const signOut = () => {
-    Cookies.remove(import.meta.env.ACCESS_TOKEN);
-    Cookies.remove(import.meta.env.REFRESH_TOKEN);
+    Cookies.remove(import.meta.env.VITE_ACCESS_TOKEN);
+    Cookies.remove(import.meta.env.VITE_REFRESH_TOKEN);
     setIsSignedIn(false);
     setUser(undefined);
 
@@ -93,7 +118,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const signUp = async (_user: User) => {
     if (validateUserRegisterData(_user)) {
-      const userData = await userSignUp(_user);
+      const userData = await organizationDataRegister(_user);
 
       if (!userData) {
         setIsSignedIn(false);
@@ -110,9 +135,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       };
     }
   };
-
-  console.log(user);
-  console.log(isSignedIn);
 
   return (
     <AuthContext.Provider

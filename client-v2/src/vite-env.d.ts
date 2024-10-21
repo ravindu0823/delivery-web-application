@@ -2,9 +2,11 @@
 
 interface ImportMetaEnv {
   readonly VITE_BASEURL: string;
-  readonly ACCESS_TOKEN: string;
-  readonly REFRESH_TOKEN: string;
-  readonly ORGANIZATION: string;
+  readonly VITE_ACCESS_TOKEN: string;
+  readonly VITE_REFRESH_TOKEN: string;
+  readonly VITE_ORGANIZATION: string;
+  readonly VITE_ORGANIZATION_DATA_USERNAME: string;
+  readonly VITE_ORGANIZATION_DATA_PASSWORD: string;
   // more env variables...
 }
 

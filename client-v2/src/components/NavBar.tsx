@@ -1,3 +1,4 @@
+import img from "../assets/img/logo/1e7071f0-dacb-4a98-f264-08dcb066d923.webp";
 import { useState, useEffect, useRef, useContext } from "react";
 import { Link } from "react-scroll";
 import Button from "../layouts/Button";
@@ -6,8 +7,9 @@ import { BiChevronDown } from "react-icons/bi";
 import SignIn from "./SignIn";
 import Register from "./Register";
 import { AuthContext } from "../contexts/AuthContext";
-import { axiosInstance, ORGANIZATION } from "../api/config";
+import { axiosInstance } from "../api/config";
 import { createGetCategoryUrlWithPageLimit } from "../api/authController";
+import { useParams } from "react-router-dom";
 
 interface Category {
   id: string;
@@ -22,6 +24,8 @@ interface Category {
 const Navbar = () => {
   const authContext = useContext(AuthContext);
 
+  const params = useParams();
+
   const [menu, setMenu] = useState<boolean>(false);
   const [showSignIn, setShowSignIn] = useState<boolean>(false);
   const [showRegister, setShowRegister] = useState<boolean>(false);
@@ -32,8 +36,9 @@ const Navbar = () => {
   const dropdownRef = useRef<HTMLUListElement | null>(null);
 
   const { user } = authContext!;
+  const orgId: string = params.orgId!;
 
-  console.log(user?.accessToken);
+  console.log(orgId);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -43,7 +48,7 @@ const Navbar = () => {
 
       try {
         const response = await axiosInstance.get(
-          createGetCategoryUrlWithPageLimit(ORGANIZATION, page.toString()),
+          createGetCategoryUrlWithPageLimit(orgId, page.toString()),
           {
             headers: {
               Authorization: `Bearer ${user?.accessToken}`,
@@ -102,7 +107,8 @@ const Navbar = () => {
     <div className="fixed w-full top-0 left-0 z-50 bg-white shadow-md">
       <div className="flex flex-row justify-between p-5 md:px-32 px-5">
         <div className="flex flex-row items-center cursor-pointer">
-          <h1 className="text-xl font-semibold">LOGO</h1>
+          <img src={img} alt="logo" className="w-16 h-auto" />
+          {/* <h1 className="text-2xl font-semibold ml-2">Serendib</h1> */}
         </div>
 
         <nav className="hidden md:flex flex-row items-center text-lg font-medium gap-8">
@@ -192,7 +198,7 @@ const Navbar = () => {
             Reviews
           </Link>
 
-          <Button title="Sign In" onClick={toggleSignIn} />
+          <Button title="Sign In" onClick={toggleSignIn} className="hidden" />
         </nav>
 
         <div className="md:hidden flex items-center">
@@ -300,6 +306,7 @@ const Navbar = () => {
             </Link>
 
             <Button
+              className="hidden"
               title="Sign In"
               onClick={() => {
                 handleMenuToggle();

@@ -1,0 +1,29 @@
+services:
+  client:
+    container_name: client-container
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: techwire/food-delivery:1.1.5
+    ports:
+      - "2000:2000"
+#     networks:
+#       - mynetwork
+
+#   web:
+#     image: nginx:mainline-alpine-slim
+#     container_name: nginx_service
+#     restart: always
+#     ports:
+#       - "80:80"
+#       - "443:443"
+#     volumes:
+#       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+#       - ./nginx/selfsigned.crt:/etc/ssl/certs/selfsigned.crt
+#       - ./nginx/selfsigned.key:/etc/ssl/private/selfsigned.key
+#     networks:
+#       - mynetwork
+
+# networks:
+#   mynetwork:
+#     driver: bridge

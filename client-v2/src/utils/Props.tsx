@@ -1,6 +1,29 @@
 import { ReactNode } from "react";
 import { User } from "../models/User";
 
+export interface Organization {
+  id: string;
+  name: string;
+  status: number;
+  userId: string;
+  image: string;
+  title: string;
+  description: string;
+  email: string;
+  address: string;
+  createUtcAt: string;
+  googleReview: string;
+}
+
+export interface OrganizationContextType {
+  organization: Organization | null;
+  setOrganization: React.Dispatch<React.SetStateAction<Organization | null>>;
+}
+
+export interface OrganizationContextProviderProps {
+  children: ReactNode;
+}
+
 export interface AuthContextType {
   user: User | undefined;
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
@@ -67,12 +90,18 @@ export interface CartItem extends Dish {
   quantity: number;
 }
 
+interface ProductOptionsProps {
+  name: string;
+  price: number;
+}
+
 export interface PopupProps {
   dish: Dish;
   quantity: number;
   setQuantity: React.Dispatch<React.SetStateAction<number>>;
   onClose: () => void;
   onAddToCart: (dish: Dish, quantity: number) => void;
+  productOptions?: ProductOptionsProps[];
 }
 
 export interface DishesCardProps {
@@ -81,6 +110,7 @@ export interface DishesCardProps {
   img?: string;
   description?: string;
   price?: number;
+  productOptions: ProductOptionsProps[]; // Add this prop
 }
 
 // Define the type for a single cart item

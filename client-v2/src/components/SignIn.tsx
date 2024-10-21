@@ -16,7 +16,7 @@ const SignIn = ({ onClose, switchToRegister }: SignInProps) => {
         <button className="auth-close-btn" onClick={onClose}>
           &times;
         </button>
-        <h2 className="text-3xl font-bold mb-6 text-center text-Blue decoration-wavy  ">
+        <h2 className="text-3xl font-bold mb-6 text-center text-Blue decoration-wavy">
           Sign In
         </h2>
 

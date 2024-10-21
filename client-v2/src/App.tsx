@@ -13,7 +13,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<PrivateRoute />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/:orgId" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route element={<PrivateRouteForAuth />}>

@@ -13,6 +13,7 @@ const Popup: React.FC<PopupProps> = ({
   setQuantity,
   onClose,
   onAddToCart,
+  productOptions,
 }) => {
   const [selectedOption, setSelectedOption] = useState<string>("");
 
@@ -38,29 +39,40 @@ const Popup: React.FC<PopupProps> = ({
           alt={dish.title}
         />
         <p className="mb-4 text-center">{dish.description}</p>
-        <div className="mb-4">
-          <div className="flex flex-col space-y-3 mb-4 custom-radio">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="selection"
-                value="01"
-                checked={selectedOption === "01"}
-                onChange={() => handleRadioChange("01")}
-              />
-              <div className="radio-content">
-                <div className="radio-text">
-                  <span className="text-sm">Subscribe</span>
-                  <span className="additional-info a">Subscribe Now</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span className="discount-banner-radio b">SAVE 21%</span>
-                  <span className="discount-price-radio b">$37.9</span>
-                </div>
+        <div className="text-center font-bold mb-3">OPTIONS</div>
+        {productOptions && productOptions.length > 0 ? (
+          <div className="mb-4">
+            {productOptions.map((option) => (
+              <div
+                key={option.name}
+                className="flex flex-col space-y-3 mb-4 custom-radio"
+              >
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="selection"
+                    value={option.name}
+                    checked={selectedOption === option.name}
+                    onChange={() => handleRadioChange(option.name)}
+                  />
+                  <div className="radio-content">
+                    <div className="radio-text">
+                      <span className="text-sm">{option.name}</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <span className="discount-price-radio b">
+                        Rs. {option.price}
+                      </span>
+                    </div>
+                  </div>
+                </label>
               </div>
-            </label>
+            ))}
           </div>
-          <div className="flex justify-center items-center space-x-4 mb-4">
+        ) : (
+          <p className="text-center text-gray-600">No options available.</p>
+        )}
+        {/* <div className="flex justify-center items-center space-x-4 mb-4">
             <button
               onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}
               className="bg-[#00CC05] text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#000000] transition-colors duration-300"
@@ -74,17 +86,16 @@ const Popup: React.FC<PopupProps> = ({
             >
               +
             </button>
-          </div>
-        </div>
-        <div className="flex justify-center space-x-4">
+          </div> */}
+      </div>
+      {/* <div className="flex justify-center space-x-4">
           <button
             onClick={() => onAddToCart(dish, quantity)}
             className="bg-[#007103] text-white px-8 py-2 rounded-full hover:bg-[#003101] transition-colors duration-300"
           >
             Add to Cart
           </button>
-        </div>
-      </div>
+        </div> */}
     </div>
   );
 };
@@ -109,7 +120,8 @@ const DishesCard: React.FC<DishesCardProps> = (props) => {
     };
   }, [isPopupVisible]);
 
-  const handleAddClick = () => {
+  const handleAddClick = async () => {
+    // const productData = await axiosInstance.get(ORGANIZATION_DATA_GET_PRODUCT_BY_ID)
     setIsPopupVisible(true);
   };
 
@@ -159,7 +171,7 @@ const DishesCard: React.FC<DishesCardProps> = (props) => {
             RM {props.price}
           </h3>
           <Button
-            title="Add"
+            title="View"
             className="w-auto bg-green-500 text-white hover:bg-green-800 transition-colors duration-300"
             onClick={handleAddClick}
           />
@@ -179,6 +191,7 @@ const DishesCard: React.FC<DishesCardProps> = (props) => {
           setQuantity={setQuantity}
           onClose={handleClosePopup}
           onAddToCart={handleAddToCart}
+          productOptions={props.productOptions}
         />
       )}
 
