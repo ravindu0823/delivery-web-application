@@ -4,7 +4,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    image: techwire/food-delivery:1.1.5
+    image: techwire/food-delivery:1.2.1
     ports:
       - "2000:2000"
 #     networks:

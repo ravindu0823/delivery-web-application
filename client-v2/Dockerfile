@@ -1,6 +1,6 @@
 FROM node:20
 
-ENV VITE_BASEURL=https://checkmateapi20240716235602.azurewebsites.net/api/
+ENV VITE_BASEURL=https://apidirect.techwirelanka.com/api/
 ENV VITE_ACCESS_TOKEN=accessToken
 ENV VITE_REFRESH_TOKEN=refreshToken
 ENV VITE_ORGANIZATION=1e7071f0-dacb-4a98-f264-08dcb066d923

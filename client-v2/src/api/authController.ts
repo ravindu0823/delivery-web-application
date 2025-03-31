@@ -64,9 +64,6 @@ export const getRefreshTokenForOrganizationData = async (
       }
     );
 
-    if (!response.statusText)
-      throw new Error(`HTTP error! Status: ${response.status}`);
-
     return {
       token: response.data.accessToken,
       refreshToken: response.data.refreshToken,
@@ -118,9 +115,6 @@ export const organizationDataLogin = async (_user: User) => {
       userName: ORGANIZATION_DATA_USERNAME,
       password: ORGANIZATION_DATA_PASSWORD,
     });
-
-    if (!response.statusText)
-      throw new Error(`HTTP error! Status: ${response.status}`);
 
     return {
       token: response.data.accessToken,

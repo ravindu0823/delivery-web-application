@@ -61,7 +61,7 @@ const Popup: React.FC<PopupProps> = ({
                     </div>
                     <div className="flex items-center space-x-3">
                       <span className="discount-price-radio b">
-                        Rs. {option.price}
+                        RM. {option.price}
                       </span>
                     </div>
                   </div>

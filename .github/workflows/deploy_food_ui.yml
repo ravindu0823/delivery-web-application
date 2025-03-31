@@ -34,7 +34,7 @@ jobs:
           docker-compose build
           docker-compose push
         working-directory: ./client-v2
-  
+
   Deploy:
     needs: Build-and-Push
     name: Deploy Food UI to Azure Instance
@@ -44,14 +44,14 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           # host: ${{ secrets.DIGITAL_OCEAN_HOST }}
-          host: 45.32.125.74
+          host: 149.28.134.48
           # username: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
           username: root
           # password: ${{ secrets.DIGITAL_OCEAN_PASSWORD }}
-          password: D4$wY3bFRY.2bvL?
+          password: +3zX@%}hu!]W7[i+
           script: |
             cd delivery-web-application/client-v2
             docker compose down -v
+            git checkout production
             git pull origin production
             docker compose up -d
-    
